@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\Article;
 use App\Models\Comment;
+use App\Services\ArticleServices\DeleteArticleService;
+use App\Services\ArticleServices\ShowArticleService;
 
 class ArticlesController
 {
@@ -35,19 +37,14 @@ class ArticlesController
 
     public function show(array $vars)
     {
-        $articleQuery = query()
-            ->select('*')
-            ->from('articles')
-            ->where('id = :id')
-            ->setParameter('id', (int) $vars['id'])
-            ->execute()
-            ->fetchAssociative();
+        $service = new ShowArticleService();
+        $article = $service->execute((int) $vars['id']);
 
         $commentsQuery = query()
             ->select('*')
             ->from('comments')
             ->where('article_id = :articleId')
-            ->setParameter('articleId', (int) $vars['id'])
+            ->setParameter('articleId', $article->id())
             ->orderBy('created_at', 'desc')
             ->execute()
             ->fetchAllAssociative();
@@ -65,23 +62,13 @@ class ArticlesController
             );
         }
 
-        $article = new Article(
-            (int) $articleQuery['id'],
-            $articleQuery['title'],
-            $articleQuery['content'],
-            $articleQuery['created_at'],
-        );
-
         return require_once __DIR__  . '/../Views/ArticlesShowView.php';
     }
 
     public function delete(array $vars)
     {
-        query()
-            ->delete('articles')
-            ->where('id = :id')
-            ->setParameter('id', (int) $vars['id'])
-            ->execute();
+        $service = new DeleteArticleService();
+        $service->execute((int) $vars['id']);
 
         header('Location: /articles/');
     }
