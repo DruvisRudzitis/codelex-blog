@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\Article;
-use App\Models\Comment;
 use App\Services\ArticleServices\DeleteArticleService;
 use App\Services\ArticleServices\ShowArticleService;
 

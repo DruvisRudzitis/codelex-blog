@@ -19,7 +19,7 @@ class ShowArticleService
     public function execute(int $id): ShowArticleServiceResponse
     {
         $article = $this->articleRepository->getById($id);
-        $comments = $this->commentRepository->getByArticleId($article->id());
+        $comments = $this->commentRepository->getAllByArticleId($article->id());
         $tags = [];
 
         return new ShowArticleServiceResponse($article, $comments, $tags);
