@@ -2,25 +2,26 @@
 
 namespace App\Services\ArticleServices;
 
-use App\Models\Article;
+use App\Repositories\ArticleRepository;
+use App\Repositories\CommentRepository;
 
 class ShowArticleService
 {
-    public function execute(int $id): Article
-    {
-        $articleQuery = query()
-            ->select('*')
-            ->from('articles')
-            ->where('id = :id')
-            ->setParameter('id', $id)
-            ->execute()
-            ->fetchAssociative();
+    private ArticleRepository $articleRepository;
+    private CommentRepository $commentRepository;
 
-        return new Article(
-            (int) $articleQuery['id'],
-            $articleQuery['title'],
-            $articleQuery['content'],
-            $articleQuery['created_at'],
-        );
+    public function __construct()
+    {
+        $this->articleRepository = new ArticleRepository();
+        $this->commentRepository = new CommentRepository();
+    }
+
+    public function execute(int $id): ShowArticleServiceResponse
+    {
+        $article = $this->articleRepository->getById($id);
+        $comments = $this->commentRepository->getByArticleId($article->id());
+        $tags = [];
+
+        return new ShowArticleServiceResponse($article, $comments, $tags);
     }
 }

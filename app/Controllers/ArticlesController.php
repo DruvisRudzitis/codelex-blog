@@ -37,30 +37,11 @@ class ArticlesController
 
     public function show(array $vars)
     {
-        $service = new ShowArticleService();
-        $article = $service->execute((int) $vars['id']);
+        $response = (new ShowArticleService())->execute((int) $vars['id']);
 
-        $commentsQuery = query()
-            ->select('*')
-            ->from('comments')
-            ->where('article_id = :articleId')
-            ->setParameter('articleId', $article->id())
-            ->orderBy('created_at', 'desc')
-            ->execute()
-            ->fetchAllAssociative();
-
-        $comments = [];
-
-        foreach ($commentsQuery as $comment)
-        {
-            $comments[] = new Comment(
-                $comment['id'],
-                $comment['article_id'],
-                $comment['name'],
-                $comment['content'],
-                $comment['created_at'],
-            );
-        }
+        $article = $response->article();
+        $comments = $response->comments();
+        $tags = $response->tags();
 
         return require_once __DIR__  . '/../Views/ArticlesShowView.php';
     }
