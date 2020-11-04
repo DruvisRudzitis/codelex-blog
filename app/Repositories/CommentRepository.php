@@ -6,7 +6,7 @@ use App\Models\Comment;
 
 class CommentRepository
 {
-    public function getByArticleId(int $articleId): array
+    public function getAllByArticleId(int $articleId): array
     {
         $commentsQuery = query()
             ->select('*')
